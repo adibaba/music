@@ -9,7 +9,9 @@ import java.util.TreeMap;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
+import de.adrianwilke.music.Date;
 import de.adrianwilke.music.HtmlParser;
 import de.adrianwilke.music.UrlCache;
 
@@ -45,7 +47,7 @@ public class OcdeParser {
 
 	public List<OcdeSong> parseSingleYearSongs(URL singleYearUrl, UrlCache urlCache) throws IOException {
 		List<OcdeSong> songs = new LinkedList<OcdeSong>();
-		
+
 		Document doc = HtmlParser.parse(singleYearUrl, urlCache);
 		for (Element element : doc.getElementsByClass("drill-down-link")) {
 			OcdeSong song = new OcdeSong();
@@ -53,6 +55,29 @@ public class OcdeParser {
 			song.title = element.getElementsByClass("info-title").get(0).text().trim();
 			song.ocde = Integer.parseInt(element.getElementsByClass("drill-down").get(0).attr("href")
 					.replaceFirst("/titel-details-", "").trim());
+			songs.add(song);
+		}
+
+		return songs;
+	}
+
+	public List<OcdeSong> parseSingleSongs(Date date, UrlCache urlCache) throws IOException {
+		List<OcdeSong> songs = new LinkedList<OcdeSong>();
+
+		URL url = new URL(ocdeBaseUrl + OcdeUrls.URL_SINGLE + date.toBerlinMillis());
+		Document doc = HtmlParser.parse(url, urlCache);
+
+		for (Element element : doc.getElementsByClass("drill-down-link")) {
+			OcdeSong song = new OcdeSong();
+			song.artist = element.getElementsByClass("info-artist").get(0).text().trim();
+			song.title = element.getElementsByClass("info-title").get(0).text().trim();
+			song.ocde = Integer.parseInt(element.getElementsByClass("drill-down").get(0).attr("href")
+					.replaceFirst("/titel-details-", "").trim());
+			Elements elements = element.getElementsByClass("play-video");
+			if (!elements.isEmpty()) {
+				song.youtube = elements.get(0).attr("data-target").replaceFirst("https://www.youtube.com/embed/", "")
+						.trim();
+			}
 			songs.add(song);
 		}
 

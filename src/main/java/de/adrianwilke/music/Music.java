@@ -30,9 +30,10 @@ public class Music {
 
 	protected static final Logger LOGGER = LogManager.getLogger();
 
-	protected static final int MODE_CREATE_SINGLE_CSV = 1;
-	protected static final int MODE_PRINT_SONG = 2;
+	protected static final int MODE_CREATE_SINGLEYEARCHARTS_CSV = 1;
+	protected static final int MODE_PRINT_SINGLEYEARCHARTS_SONG = 2;
 	protected static final int MODE_YOUTUBE_SEARCH = 3;
+	protected static final int MODE_PRINT_SONG = 4;
 
 	/**
 	 * Main entry point.
@@ -64,20 +65,32 @@ public class Music {
 
 	public Music(UrlCache urlCache, String googleApiKey, int mode, String ocdeBaseUrl) throws IOException {
 
-		if (mode == MODE_CREATE_SINGLE_CSV) {
+		if (mode == MODE_CREATE_SINGLEYEARCHARTS_CSV) {
 			writeSingleYearChartsToCsvFile(ocdeBaseUrl, urlCache,
 					new File(System.getProperty("java.io.tmpdir"), "singleyear.csv"));
 
-		} else if (mode == MODE_PRINT_SONG) {
+		} else if (mode == MODE_PRINT_SINGLEYEARCHARTS_SONG) {
 			printSingleYearChartsSong(ocdeBaseUrl, urlCache, 1994, 68);
 
 		} else if (mode == MODE_YOUTUBE_SEARCH) {
 			youtube(googleApiKey, "Beck");
+
+		} else if (mode == MODE_PRINT_SONG) {
+			Date date = new Date(2018, 11, 1);
+			List<OcdeSong> charts = new OcdeParser(ocdeBaseUrl).parseSingleSongs(date, urlCache);
+			printOcdeSong(ocdeBaseUrl, charts.get(12));
 		}
 	}
 
 	public void youtube(String apiKey, String query) throws UnsupportedEncodingException, IOException {
 		System.out.println(new YoutubeSearch(apiKey).get(URLEncoder.encode(query, "UTF-8")));
+	}
+
+	public void printOcdeSong(String ocdeBaseUrl, OcdeSong ocdeSong) throws IOException {
+		System.out.println(ocdeSong);
+		System.out.println(ocdeSong.getDetailsUrl(ocdeBaseUrl));
+		System.out.println(ocdeSong.getCoverUrl(ocdeBaseUrl));
+		System.out.println(ocdeSong.getYoutubeUrl());
 	}
 
 	public void printSingleYearChartsSong(String ocdeBaseUrl, UrlCache urlCache, int year, int rank)
@@ -87,6 +100,7 @@ public class Music {
 		System.out.println(ocdeSongs.get(year).get(rank - 1));
 		System.out.println(ocdeSongs.get(year).get(rank - 1).getDetailsUrl(ocdeBaseUrl));
 		System.out.println(ocdeSongs.get(year).get(rank - 1).getCoverUrl(ocdeBaseUrl));
+		System.out.println(ocdeSongs.get(year).get(rank - 1).youtube);
 	}
 
 	public void writeSingleYearChartsToCsvFile(String ocdeBaseUrl, UrlCache urlCache, File csvOutFile)
