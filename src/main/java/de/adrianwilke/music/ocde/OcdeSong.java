@@ -1,8 +1,5 @@
 package de.adrianwilke.music.ocde;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import de.adrianwilke.music.Song;
 
 /**
@@ -12,16 +9,18 @@ import de.adrianwilke.music.Song;
  */
 public class OcdeSong extends Song {
 
-	public URL ocdeCover;
-	public URL ocdeDetails;
+	public static final String ID_OCDE = "ocde";
 
-	public OcdeSong setOcdeCoverUrl(String ocdeCover) throws MalformedURLException {
-		this.ocdeCover = new URL(ocdeCover);
-		return this;
+	/**
+	 * OCDE ID
+	 */
+	public Integer ocde;
+
+	public String getDetailsUrl(String ocdeBaseUrl) {
+		return ocdeBaseUrl + "/titel-details-" + ocde;
 	}
 
-	public OcdeSong setOcdeDetailsUrl(String ocdeDetails) throws MalformedURLException {
-		this.ocdeDetails = new URL(ocdeDetails);
-		return this;
+	public String getCoverUrl(String ocdeBaseUrl) {
+		return ocdeBaseUrl + "/templates/gfktemplate/images/cover/" + ocde + "_s.jpg";
 	}
 }

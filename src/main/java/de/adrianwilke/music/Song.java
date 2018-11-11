@@ -7,18 +7,18 @@ package de.adrianwilke.music;
  */
 public class Song {
 
-	public String artist;
+	public static final String ID_TITLE = "title";
+	public static final String ID_ARTIST = "artist";
+
+	/**
+	 * Title of the song.
+	 */
 	public String title;
 
-	public Song setArtist(String artist) {
-		this.artist = artist;
-		return this;
-	}
-
-	public Song setTitle(String title) {
-		this.title = title;
-		return this;
-	}
+	/**
+	 * String can contain multiple artists.
+	 */
+	public String artist;
 
 	@Override
 	public String toString() {

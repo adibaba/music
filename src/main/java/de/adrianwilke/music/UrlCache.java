@@ -16,9 +16,9 @@ import org.apache.logging.log4j.Logger;
 public class UrlCache {
 
 	protected static final Logger LOGGER = LogManager.getLogger();
-	protected static final String DEFAULT_TMP_DIRECTORY = "de_adrianwilke_music";
+	protected static final String DEFAULT_TMP_DIRECTORY = "music-cache";
 
-	protected File directory;
+	protected File cacheDirectory;
 
 	public UrlCache() throws IOException {
 		this(new File(System.getProperty("java.io.tmpdir"), DEFAULT_TMP_DIRECTORY));
@@ -44,7 +44,7 @@ public class UrlCache {
 				throw new IOException("Cache directory could not be created: " + directory);
 			}
 		}
-		this.directory = directory;
+		this.cacheDirectory = directory;
 		LOGGER.info("Cache directory: " + directory);
 	}
 
@@ -53,7 +53,7 @@ public class UrlCache {
 	}
 
 	public File get(URL url) throws IOException {
-		File file = new File(directory, String.valueOf(url.hashCode()));
+		File file = new File(cacheDirectory, String.valueOf(url.hashCode()));
 		if (!file.exists()) {
 			LOGGER.debug("Cache miss: " + url.toString());
 			FileUtils.copyURLToFile(url, file);
