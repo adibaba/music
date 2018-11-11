@@ -1,4 +1,4 @@
-package de.adrianwilke.music.odde;
+package de.adrianwilke.music.ocde;
 
 import java.io.IOException;
 import java.net.URL;
@@ -14,9 +14,7 @@ import de.adrianwilke.music.HtmlParser;
 import de.adrianwilke.music.UrlCache;
 
 /**
- * ocde parser.
- * 
- * Online data structures of 2018-11-10.
+ * OCDE parser.
  *
  * @author Adrian Wilke
  */

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -15,8 +16,9 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.adrianwilke.music.odde.OcdeParser;
-import de.adrianwilke.music.odde.OcdeSong;
+import de.adrianwilke.music.ocde.OcdeParser;
+import de.adrianwilke.music.ocde.OcdeSong;
+import de.adrianwilke.music.youtube.YoutubeSearch;
 
 /**
  * Music.
@@ -67,6 +69,11 @@ public class Music {
 			System.out.println(ocdeSongs.get(year).get(rank - 1).ocdeDetails);
 		}
 
+		if ("youtube".equals("youtube") && args.length > 0) {
+			String apiKey = args[0];
+			System.out.println(new YoutubeSearch(apiKey)
+					.get(URLEncoder.encode(ocdeSongs.get(year).get(rank - 1).toString(), "UTF-8")));
+		}
 	}
 
 }

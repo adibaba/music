@@ -1,9 +1,7 @@
-package de.adrianwilke.music.odde;
+package de.adrianwilke.music.ocde;
 
 /**
- * ocde URLs.
- * 
- * Online data structures of 2018-11-10.
+ * OCDE URLs.
  *
  * @author Adrian Wilke
  */

@@ -1,4 +1,4 @@
-package de.adrianwilke.music.odde;
+package de.adrianwilke.music.ocde;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -6,9 +6,7 @@ import java.net.URL;
 import de.adrianwilke.music.Song;
 
 /**
- * ocde song.
- * 
- * Online data structures of 2018-11-10.
+ * OCDE song.
  *
  * @author Adrian Wilke
  */
