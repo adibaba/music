@@ -6,6 +6,8 @@ import java.net.URL;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import de.adrianwilke.music.io.UrlCache;
+
 /**
  * HTML parser.
  *

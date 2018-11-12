@@ -13,7 +13,8 @@ import org.jsoup.select.Elements;
 
 import de.adrianwilke.music.Date;
 import de.adrianwilke.music.HtmlParser;
-import de.adrianwilke.music.UrlCache;
+import de.adrianwilke.music.Ids;
+import de.adrianwilke.music.io.UrlCache;
 
 /**
  * OCDE parser.
@@ -51,9 +52,9 @@ public class OcdeParser {
 		Document doc = HtmlParser.parse(singleYearUrl, urlCache);
 		for (Element element : doc.getElementsByClass("drill-down-link")) {
 			OcdeSong song = new OcdeSong();
-			song.artist = element.getElementsByClass("info-artist").get(0).text().trim();
-			song.title = element.getElementsByClass("info-title").get(0).text().trim();
-			song.ocde = Integer.parseInt(element.getElementsByClass("drill-down").get(0).attr("href")
+			song.set(Ids.ARTIST, element.getElementsByClass("info-artist").get(0).text().trim());
+			song.set(Ids.TITLE, element.getElementsByClass("info-title").get(0).text().trim());
+			song.set(Ids.OCDE, element.getElementsByClass("drill-down").get(0).attr("href")
 					.replaceFirst("/titel-details-", "").trim());
 			songs.add(song);
 		}
@@ -69,14 +70,14 @@ public class OcdeParser {
 
 		for (Element element : doc.getElementsByClass("drill-down-link")) {
 			OcdeSong song = new OcdeSong();
-			song.artist = element.getElementsByClass("info-artist").get(0).text().trim();
-			song.title = element.getElementsByClass("info-title").get(0).text().trim();
-			song.ocde = Integer.parseInt(element.getElementsByClass("drill-down").get(0).attr("href")
+			song.set(Ids.ARTIST, element.getElementsByClass("info-artist").get(0).text().trim());
+			song.set(Ids.TITLE, element.getElementsByClass("info-title").get(0).text().trim());
+			song.set(Ids.OCDE, element.getElementsByClass("drill-down").get(0).attr("href")
 					.replaceFirst("/titel-details-", "").trim());
 			Elements elements = element.getElementsByClass("play-video");
 			if (!elements.isEmpty()) {
-				song.youtube = elements.get(0).attr("data-target").replaceFirst("https://www.youtube.com/embed/", "")
-						.trim();
+				song.set(Ids.YOUTUBE,
+						elements.get(0).attr("data-target").replaceFirst("https://www.youtube.com/embed/", "").trim());
 			}
 			songs.add(song);
 		}

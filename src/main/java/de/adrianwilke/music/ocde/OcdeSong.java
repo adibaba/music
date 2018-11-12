@@ -1,6 +1,11 @@
 package de.adrianwilke.music.ocde;
 
+import de.adrianwilke.music.Ids;
 import de.adrianwilke.music.Song;
+import de.adrianwilke.music.features.Artist;
+import de.adrianwilke.music.features.Ocde;
+import de.adrianwilke.music.features.Title;
+import de.adrianwilke.music.features.Youtube;
 
 /**
  * OCDE song.
@@ -9,28 +14,23 @@ import de.adrianwilke.music.Song;
  */
 public class OcdeSong extends Song {
 
-	public static final String ID_OCDE = "ocde";
-	public static final String ID_YOUTUBE = "youtube";
+	public OcdeSong() {
+		this.addFeature(Ids.TITLE, new Title(Ids.TITLE));
+		this.addFeature(Ids.ARTIST, new Artist(Ids.ARTIST));
+		this.addFeature(Ids.YOUTUBE, new Youtube(Ids.YOUTUBE));
+		this.addFeature(Ids.OCDE, new Ocde(Ids.OCDE));
+	}
 
-	/**
-	 * OCDE ID
-	 */
-	public Integer ocde;
-
-	/**
-	 * YouTube video ID
-	 */
-	public String youtube;
+	public String getOcde() {
+		return features.containsKey(Ids.OCDE) ? features.get(Ids.OCDE).toString() : "?";
+	}
 
 	public String getDetailsUrl(String ocdeBaseUrl) {
-		return ocdeBaseUrl + "/titel-details-" + ocde;
+		return ocdeBaseUrl + "/titel-details-" + getOcde();
 	}
 
 	public String getCoverUrl(String ocdeBaseUrl) {
-		return ocdeBaseUrl + "/templates/gfktemplate/images/cover/" + ocde + "_s.jpg";
+		return ocdeBaseUrl + "/templates/gfktemplate/images/cover/" + getOcde() + "_s.jpg";
 	}
 
-	public String getYoutubeUrl() {
-		return (youtube == null) ? "" : "https://www.youtube.com/watch?v=" + youtube;
-	}
 }

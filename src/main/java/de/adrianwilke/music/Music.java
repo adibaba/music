@@ -1,7 +1,6 @@
 package de.adrianwilke.music;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -12,11 +11,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.adrianwilke.music.io.Exporter;
+import de.adrianwilke.music.io.Importer;
+import de.adrianwilke.music.io.UrlCache;
 import de.adrianwilke.music.ocde.OcdeParser;
 import de.adrianwilke.music.ocde.OcdeSong;
 import de.adrianwilke.music.youtube.YoutubeSearch;
@@ -30,7 +30,8 @@ public class Music {
 
 	protected static final Logger LOGGER = LogManager.getLogger();
 
-	protected static final int MODE_CREATE_SINGLEYEARCHARTS_CSV = 1;
+	protected static final int DEV = -1;
+	protected static final int MODE_EXPORT_IMPORT_CSV = 1;
 	protected static final int MODE_PRINT_SINGLEYEARCHARTS_SONG = 2;
 	protected static final int MODE_YOUTUBE_SEARCH = 3;
 	protected static final int MODE_PRINT_SONG = 4;
@@ -44,7 +45,7 @@ public class Music {
 	 */
 	public static void main(String[] args) throws IOException {
 
-		int mode = 0;
+		int mode = 1;
 
 		if (args.length < 2) {
 			System.err.println("Please provide parameters.");
@@ -65,9 +66,9 @@ public class Music {
 
 	public Music(UrlCache urlCache, String googleApiKey, int mode, String ocdeBaseUrl) throws IOException {
 
-		if (mode == MODE_CREATE_SINGLEYEARCHARTS_CSV) {
-			writeSingleYearChartsToCsvFile(ocdeBaseUrl, urlCache,
-					new File(System.getProperty("java.io.tmpdir"), "singleyear.csv"));
+		if (mode == MODE_EXPORT_IMPORT_CSV) {
+			exportImport(ocdeBaseUrl, urlCache, new File(System.getProperty("java.io.tmpdir"), "singleyearA.csv"),
+					new File(System.getProperty("java.io.tmpdir"), "singleyearB.csv"));
 
 		} else if (mode == MODE_PRINT_SINGLEYEARCHARTS_SONG) {
 			printSingleYearChartsSong(ocdeBaseUrl, urlCache, 1994, 68);
@@ -80,6 +81,7 @@ public class Music {
 			List<OcdeSong> charts = new OcdeParser(ocdeBaseUrl).parseSingleSongs(date, urlCache);
 			printOcdeSong(ocdeBaseUrl, charts.get(12));
 		}
+
 	}
 
 	public void youtube(String apiKey, String query) throws UnsupportedEncodingException, IOException {
@@ -90,7 +92,7 @@ public class Music {
 		System.out.println(ocdeSong);
 		System.out.println(ocdeSong.getDetailsUrl(ocdeBaseUrl));
 		System.out.println(ocdeSong.getCoverUrl(ocdeBaseUrl));
-		System.out.println(ocdeSong.getYoutubeUrl());
+		System.out.println(ocdeSong.getYoutube());
 	}
 
 	public void printSingleYearChartsSong(String ocdeBaseUrl, UrlCache urlCache, int year, int rank)
@@ -100,32 +102,24 @@ public class Music {
 		System.out.println(ocdeSongs.get(year).get(rank - 1));
 		System.out.println(ocdeSongs.get(year).get(rank - 1).getDetailsUrl(ocdeBaseUrl));
 		System.out.println(ocdeSongs.get(year).get(rank - 1).getCoverUrl(ocdeBaseUrl));
-		System.out.println(ocdeSongs.get(year).get(rank - 1).youtube);
+		System.out.println(ocdeSongs.get(year).get(rank - 1).getYoutube());
 	}
 
-	public void writeSingleYearChartsToCsvFile(String ocdeBaseUrl, UrlCache urlCache, File csvOutFile)
+	public void exportImport(String ocdeBaseUrl, UrlCache urlCache, File csvOutFileA, File csvOutFileB)
 			throws IOException {
 
+		// TODO: Years and ranks not included
+
 		Map<Integer, List<OcdeSong>> ocdeSongs = getSingleYearCharts(ocdeBaseUrl, urlCache);
-
-		CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(csvOutFile), CSVFormat.DEFAULT);
-		csvPrinter.printRecord(new Object[] { "year", "rank", Song.ID_ARTIST, Song.ID_TITLE, OcdeSong.ID_OCDE });
-
-		for (Entry<Integer, List<OcdeSong>> ocdeYearSongs : ocdeSongs.entrySet()) {
-			Integer year = ocdeYearSongs.getKey();
-			Integer rank = 0;
-			for (OcdeSong ocdeSong : ocdeYearSongs.getValue()) {
-				List<String> list = new LinkedList<String>();
-				list.add(year.toString());
-				list.add((++rank).toString());
-				list.add(ocdeSong.artist);
-				list.add(ocdeSong.title);
-				list.add(ocdeSong.ocde.toString());
-				csvPrinter.printRecord(list);
-			}
+		List<Song> allSongs = new LinkedList<Song>();
+		for (List<OcdeSong> songsList : ocdeSongs.values()) {
+			allSongs.addAll(songsList);
 		}
-		csvPrinter.close();
-		LOGGER.info("Wrote file: " + csvOutFile.getAbsolutePath());
+		new Exporter().export(allSongs, csvOutFileA);
+
+		new Importer().importFile(csvOutFileA);
+
+		new Exporter().export(allSongs, csvOutFileB);
 	}
 
 	/**

@@ -1,4 +1,4 @@
-package de.adrianwilke.music;
+package de.adrianwilke.music.io;
 
 import java.io.File;
 import java.io.IOException;
